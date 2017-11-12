@@ -1,0 +1,19 @@
+# TODO 
+============
+
+* Request
+    * GET
+    * POST
+    * PUT
+    * COPY
+    * DELETE
+    * PURGE
+
+* Response
+    * StatusCode
+    * Body
+
+* Report
+    * Plain Report
+    * HTML Report
+

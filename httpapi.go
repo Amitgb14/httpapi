@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 
@@ -16,7 +15,7 @@ func main() {
 		if err != nil {
 			log.Fatalf("Read config: %v", err)
 		}
-		fmt.Println(data)
+		// fmt.Println(data)
 		req := handler.Request{}
 		req.NewRequests(data)
 		//if err != nil {
