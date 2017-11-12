@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/Amitgb14/httpapi/config"
+	"github.com/Amitgb14/httpapi/handler"
 )
 
 func main() {
@@ -15,6 +16,12 @@ func main() {
 		if err != nil {
 			log.Fatalf("Read config: %v", err)
 		}
-		fmt.Println(*data)
+		fmt.Println(data)
+		req := handler.Request{}
+		req.NewRequests(data)
+		//if err != nil {
+		//	log.Fatalf("%v", err)
+		//}
+		//fmt.Println(report)
 	}
 }
