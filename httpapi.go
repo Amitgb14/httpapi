@@ -15,12 +15,10 @@ func main() {
 		if err != nil {
 			log.Fatalf("Read config: %v", err)
 		}
-		// fmt.Println(data)
-		req := handler.Request{}
-		req.NewRequests(data)
-		//if err != nil {
-		//	log.Fatalf("%v", err)
-		//}
-		//fmt.Println(report)
+		err = handler.NewRequests(data)
+		if err != nil {
+			log.Fatalf("%v", err)
+		}
+
 	}
 }

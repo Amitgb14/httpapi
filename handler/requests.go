@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"bytes"
 	"fmt"
 	"log"
 	"net/http"
@@ -10,6 +9,7 @@ import (
 	"time"
 
 	config "github.com/Amitgb14/httpapi/config"
+	"io/ioutil"
 )
 
 // Set constant
@@ -38,29 +38,38 @@ func (req *Request) NewClient() *http.Client {
 }
 
 // NewRequests make new request
-func (req *Request) NewRequests(data *config.Parameter) {
-
+func NewRequests(data *config.Parameter) error{
+	var req Request
 	var err error
+
+	var response = Response{}
 	client := req.NewClient()
 
 	host := "http://" + data.Host + ":" + strconv.Itoa(data.Port)
 	fmt.Println(host)
-	values := bytes.NewBuffer([]byte(``))
+	payloads :=  strings.NewReader("")
+
 	for _, content := range data.Requests {
 		var request *http.Request
 
-		method := strings.ToUpper(content["Method"])
-		contenttype := content["Content-Type"]
+		url := host + content["path"]
+		method := strings.ToUpper(content["method"])
+		contenttype := content["type"]
 		if contenttype == "" {
 			contenttype = contentTypePlain
 		} else if contenttype == "application/json" {
 			contenttype = contentTypeJson
 		}
 
+		fmt.Println(method, url)
 		if method == "GET" {
-			request, err = http.NewRequest(method, host, nil)
+			request, err = http.NewRequest(method, url, nil)
+
 		} else {
-			request, err = http.NewRequest(method, host, values)
+			if content["Data"] != "" {
+				payloads = strings.NewReader(content["data"])
+			}
+			request, err = http.NewRequest(method, url, payloads)
 		}
 
 		if err != nil {
@@ -75,12 +84,16 @@ func (req *Request) NewRequests(data *config.Parameter) {
 			log.Fatalf("%v", err)
 		}
 		defer resp.Body.Close()
-		fmt.Println(resp.StatusCode)
-		// datas, _ := ioutil.ReadAll(resp.Body)
-		// fmt.Println(string(datas))
-		// response.resp = resp
 
+		response.Status = resp.StatusCode
+		datas, _ := ioutil.ReadAll(resp.Body)
+		response.Body = string(datas)
+
+		fmt.Println("Status: ", response.Status)
+		fmt.Println("Text: ", response.Body)
+		fmt.Println("----------------------------------------------------")
 		// return &response, nil
 
 	}
+	return nil
 }

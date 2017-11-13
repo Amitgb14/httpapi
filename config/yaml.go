@@ -9,12 +9,12 @@ import (
 
 // Parameter describe a YAML config file.
 type Parameter struct {
-	Host     string              `yaml:"Host,omitempty"`
-	Port     int                 `yaml:"Port,omitempty"`
-	Thread   int                 `yaml:"Thread,omitempty"`
-	Loop     int                 `yaml:"Loop,omitempty"`
-	Include  []string            `yaml:"Include,omitempty"`
-	Requests []map[string]string `yaml:"Requests,omitempty"`
+	Host     string              `yaml:"host,omitempty"`
+	Port     int                 `yaml:"port,omitempty"`
+	Thread   int                 `yaml:"thread,omitempty"`
+	Loop     int                 `yaml:"loop,omitempty"`
+	Include  []string            `yaml:"include,omitempty"`
+	Requests []map[string]string `yaml:"requests,omitempty"`
 }
 
 // Read YAML file.
