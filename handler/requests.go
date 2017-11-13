@@ -37,8 +37,28 @@ func (req *Request) NewClient() *http.Client {
 	return req.httpClient
 }
 
+func TestReponse(resp *Response, status [2]int, response string) {
+	var checkStatus bool = false
+	for _, code := range status {
+		if resp.Status == code {
+			checkStatus = true
+		}
+	}
+	if !checkStatus {
+		log.Printf("\tFailed: %s\n", strconv.Itoa(resp.Status) + " != " + strings.Trim(strings.Replace(fmt.Sprint(status), " ", ", ", -1), "[]"))
+		return
+	}
+	if response != "" {
+		if resp.Body != response {
+			log.Printf("\tFailed: %s\n", string(resp.Body) + " != " + response)
+			return
+		}
+	}
+
+
+}
 // NewRequests make new request
-func NewRequests(data *config.Parameter) error{
+func NewRequests(data *config.Parameter, test bool) error{
 	var req Request
 	var err error
 
@@ -46,7 +66,7 @@ func NewRequests(data *config.Parameter) error{
 	client := req.NewClient()
 
 	host := "http://" + data.Host + ":" + strconv.Itoa(data.Port)
-	fmt.Println(host)
+	log.Printf("%s\n", host)
 	payloads :=  strings.NewReader("")
 
 	for _, content := range data.Requests {
@@ -61,17 +81,15 @@ func NewRequests(data *config.Parameter) error{
 			contenttype = contentTypeJson
 		}
 
-		fmt.Println(method, url)
+		log.Printf("%s %s", method, url)
 		if method == "GET" {
 			request, err = http.NewRequest(method, url, nil)
-
 		} else {
-			if content["Data"] != "" {
+			if content["data"] != "" {
 				payloads = strings.NewReader(content["data"])
 			}
 			request, err = http.NewRequest(method, url, payloads)
 		}
-
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -89,10 +107,22 @@ func NewRequests(data *config.Parameter) error{
 		datas, _ := ioutil.ReadAll(resp.Body)
 		response.Body = string(datas)
 
-		fmt.Println("Status: ", response.Status)
-		fmt.Println("Text: ", response.Body)
-		fmt.Println("----------------------------------------------------")
-		// return &response, nil
+		if test {
+			status := strings.Split(content["status"], ",")
+			status_ := [2]int{}
+			one, _ := strconv.Atoi(status[0])
+			status_[0] = one
+			if len(status) > 1 {
+				two, _ := strconv.Atoi(status[1])
+				status_[1] = two
+			}
+			TestReponse(&response, status_, content["resps"])
+		} else {
+			log.Printf("Status: %d", response.Status)
+			log.Printf("Text: %s", response.Body)
+			log.Printf("----------------------------------------------------")
+
+		}
 
 	}
 	return nil
