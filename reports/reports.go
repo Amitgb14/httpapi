@@ -17,8 +17,14 @@ func (rep *Reports) FaildCount() int{
 }
 
 const report_tesmp = `
-{{.TotalCount}} Requests		{{.Pass}} Passed	{{.FaildCount}} Failed
----------------------------------------------------------------------------------
+{{.Pass}} Passed
+{{.FaildCount}} Failed
+------------
+{{.TotalCount}} Requests
+------------
+
+---------------------------------------------------------------------
+
 {{range $test := .TestName}} {{range $key, $value := $test}}{{ index $test $key 1}} : {{$key}} => {{ index $test $key 0}}{{end}}
 {{end}}
 `

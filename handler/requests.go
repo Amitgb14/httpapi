@@ -96,7 +96,10 @@ func NewRequests(data *config.Parameter, test bool) error{
 			contenttype = contentTypeJson
 		}
 
-		log.Printf("%s %s", method, url)
+		if !test{
+			log.Printf("%s %s", method, url)
+		}
+
 		if method == "GET" {
 			request, err = http.NewRequest(method, url, nil)
 		} else {
