@@ -9,6 +9,7 @@ import (
 	"time"
 
 	config "github.com/Amitgb14/httpapi/config"
+	"github.com/Amitgb14/httpapi/reports"
 	"io/ioutil"
 )
 
@@ -37,7 +38,7 @@ func (req *Request) NewClient() *http.Client {
 	return req.httpClient
 }
 
-func TestReponse(resp *Response, status [2]int, response string) {
+func TestReponse(resp *Response, status []int, response string) bool {
 	var checkStatus bool = false
 	for _, code := range status {
 		if resp.Status == code {
@@ -45,17 +46,23 @@ func TestReponse(resp *Response, status [2]int, response string) {
 		}
 	}
 	if !checkStatus {
-		log.Printf("\tFailed: %s\n", strconv.Itoa(resp.Status) + " != " + strings.Trim(strings.Replace(fmt.Sprint(status), " ", ", ", -1), "[]"))
-		return
+		var msg = " != "
+		if len(status) > 1 {
+			msg = " not in " + fmt.Sprintf("%v", status)
+		} else {
+			msg += fmt.Sprintf("%v", status)[1:4]
+		}
+		log.Printf("\tFailed: %s\n", strconv.Itoa(resp.Status) + msg)
+		return checkStatus
 	}
 	if response != "" {
 		if resp.Body != response {
 			log.Printf("\tFailed: %s\n", string(resp.Body) + " != " + response)
-			return
+			return checkStatus
 		}
 	}
 
-
+	return checkStatus
 }
 // NewRequests make new request
 func NewRequests(data *config.Parameter, test bool) error{
@@ -63,9 +70,17 @@ func NewRequests(data *config.Parameter, test bool) error{
 	var err error
 
 	var response = Response{}
-	client := req.NewClient()
+	var report = reports.Reports{}
 
-	host := "http://" + data.Host + ":" + strconv.Itoa(data.Port)
+	client := req.NewClient()
+	protocol := "http://"
+	if data.SSL {
+		protocol = "https://"
+	}
+	host := protocol + data.Host
+	if data.Port != 0 {
+		host += ":" + strconv.Itoa(data.Port)
+	}
 	log.Printf("%s\n", host)
 	payloads :=  strings.NewReader("")
 
@@ -96,6 +111,9 @@ func NewRequests(data *config.Parameter, test bool) error{
 
 		request.Header.Add("User-Agent", USERAGENT)
 		request.Header.Set("Content-Type", contenttype)
+		if data.Token != "" {
+			request.Header.Add("Authorization", data.Token)
+		}
 
 		resp, err := client.Do(request)
 		if err != nil {
@@ -109,14 +127,27 @@ func NewRequests(data *config.Parameter, test bool) error{
 
 		if test {
 			status := strings.Split(content["status"], ",")
-			status_ := [2]int{}
-			one, _ := strconv.Atoi(status[0])
-			status_[0] = one
-			if len(status) > 1 {
-				two, _ := strconv.Atoi(status[1])
-				status_[1] = two
+			status_ := []int{}
+			var i int
+			for i < len(status) {
+				if status[i] != "" {
+					sts, _ := strconv.Atoi(status[i])
+					status_ = append(status_, sts)
+				}
+				i++
 			}
-			TestReponse(&response, status_, content["resps"])
+			repo := make(map[string][]string)
+			testStatus := TestReponse(&response, status_, content["resps"])
+			report.TotalCount++
+			var flgs = "Failed"
+			if testStatus {
+				report.Pass++
+				flgs = "Passed"
+			}
+
+			t := []string{flgs, method}
+			repo[url] = t
+			report.TestName = append(report.TestName, repo)
 		} else {
 			log.Printf("Status: %d", response.Status)
 			log.Printf("Text: %s", response.Body)
@@ -124,6 +155,9 @@ func NewRequests(data *config.Parameter, test bool) error{
 
 		}
 
+	}
+	if test{
+		reports.GeneratesReport(&report)
 	}
 	return nil
 }
