@@ -11,6 +11,8 @@ import (
 type Parameter struct {
 	Host     string              `yaml:"host,omitempty"`
 	Port     int                 `yaml:"port,omitempty"`
+	SSL	     bool                `yaml:"ssl,omitempty"`
+	Token	 string              `yaml:"token,omitempty"`
 	Thread   int                 `yaml:"thread,omitempty"`
 	Loop     int                 `yaml:"loop,omitempty"`
 	Include  []string            `yaml:"include,omitempty"`
