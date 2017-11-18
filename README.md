@@ -35,7 +35,7 @@ thread: 1
 loop: 1
 requests:
   - path: /status
-    method: Get
+    method: GET
     status: 200
 ```
 
@@ -54,7 +54,7 @@ include:
 ```yaml
 requests:
   - path: /status
-    method: Get
+    method: GET
     status: 200
 
   - path: /create
@@ -66,7 +66,7 @@ requests:
 ```yaml
 requests:
   - path: /health
-    method: Get
+    method: GET
     status: 200
 ```
 
