@@ -29,45 +29,45 @@ func main() {
 
 ### test.yaml
 ```yaml
-Host: localhost
-Port: 8080
-Thread: 1
-Loop: 1
-Requests:
-  - Path: /status
-    Method: Get
-    Status: 200
+host: localhost
+port: 8080
+thread: 1
+loop: 1
+requests:
+  - path: /status
+    method: Get
+    status: 200
 ```
 
 ### test2.yaml
 ```yaml
-Host: localhost
-Port: 8080
-Thread: 1
-Loop: 1
-Include:
+host: localhost
+port: 8080
+thread: 1
+loop: 1
+include:
   - a.yaml
   - b.yaml
 ```
 
 ### a.yaml
 ```yaml
-Requests:
-  - Path: /status
-    Method: Get
-    Status: 200
+requests:
+  - path: /status
+    method: Get
+    status: 200
 
-  - Path: /create
-    Method: POST
-    Status: 201
+  - path: /create
+    method: POST
+    status: 201
 ```
 
 ### b.yaml
 ```yaml
-Requests:
-  - Path: /health
-    Method: Get
-    Status: 200
+requests:
+  - path: /health
+    method: Get
+    status: 200
 ```
 
 
