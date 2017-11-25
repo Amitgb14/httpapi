@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/Amitgb14/httpapi/config"
+    config "github.com/Amitgb14/configfile"
 	"github.com/Amitgb14/httpapi/handler"
 )
 
