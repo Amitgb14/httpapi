@@ -2,29 +2,17 @@
 
 HTTP API client for Go
 
+### Download configfile
+```
+$ go get github.com/Amitgb14/configfile
+```
 
-### Example
-```go
-package main
-
-import (
-	"fmt"
-	"log"
-	"os"
-
-	"github.com/Amitgb14/httpapi/config"
-)
-
-func main() {
-
-	for _, file := range os.Args[1:] {
-		data, err := config.Yaml(file)
-		if err != nil {
-			log.Fatalf("Read config: %v", err)
-		}
-		fmt.Println(*data)
-	}
-}
+### Build httpapi
+```
+$ git clone https://github.com/Amitgb14/httpapi.git
+$ cd httpapi
+$ go build
+$ ./httpapi test.yaml
 ```
 
 ### test.yaml
